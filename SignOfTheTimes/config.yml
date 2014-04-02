@@ -1,10 +1,2 @@
 # config.yml for SignOfTheTimes plugin
 #
-# checkUpdates: Not implemented.
-# autoUpdate:   Not implemented.
-# removeZip:    Not implemented.
-#
-
-checkUpdate: true
-autoUpdate: true
-removeZip: false
