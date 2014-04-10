@@ -18,6 +18,9 @@
 
 package io.github.chrisbotcom.signofthetimes;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
 /**
  * 
  * @author Chrisbotcom
@@ -25,77 +28,73 @@ package io.github.chrisbotcom.signofthetimes;
  */
 public class SignTimer {
 
-		private Integer x;
-		private Integer y;
-		private Integer z;
-		private String world;
-		private String timer;
-		private Integer hours;
-		private Integer minutes;
-		private Integer seconds;
-		private String format;
-		
-		/**
-		 * Clear and initialize timer.
-		 */
-		public void clear() {
-			this.x = 0;
-			this.y = 0;
-			this.z = 0;
-			this.world = "";
-			this.timer = "";
-			this.hours = 0;
-			this.minutes = 0;
-			this.seconds = 0;
-			this.format = "";
+		private Location location;
+		private String preset;
+		private Integer minutes = 0;
+		private Integer seconds = 0;
+		private String name;
+		private Integer line;
+		private String command;
+		private boolean auto;
+				
+		public SignTimer(String name) {
+			this.name = name;
 		}
 		
+		public Location getLocation() {
+			return location;
+		}
+
+		public void setLocation(Location location) {
+			this.location = location;
+		}
+
 		/**
 		 * Get the X coordinate of the sign.
-		 * @return Integer
+		 * @return Double
 		 */
-		public Integer getX() {
-			return x;
+		public Double getX() {
+			return this.location.getX();
 		}
 		
 		/**
 		 * Set the X coordinate of the sign.
-		 * @param x - Integer
+		 * @param x - Double
 		 */
-		public void setX(Integer x) {
-			this.x = x;
+		public void setX(Double x) {
+			this.location.setX(x);
 		}
 		
 		/**
 		 * Get the Y coordinate of the sign.
-		 * @return Integer
+		 * @return Double
 		 */
-		public Integer getY() {
-			return y;
+		public Double getY() {
+			return this.location.getX();
 		}
 		
 		/**
 		 * Set the Y coordinate of the sign.
-		 * @param y - Integer
+		 * @param y - Double
 		 */
-		public void setY(Integer y) {
-			this.y = y;
+		public void setY(Double y) {
+			this.location.setY(y);;
 		}
 		
 		/**
 		 * Get the Z coordinate of the sign.
-		 * @return Integer
+		 * @return Double
 		 */
-		public Integer getZ() {
-			return z;
+		public Double getZ() {
+			return this.location.getZ();
 		}
 		
 		/**
 		 * Set the Z coordinate of the sign.
-		 * @param z - Integer
+		 * @param z - Double
 		 */
-		public void setZ(Integer z) {
-			this.z = z;
+		public void setZ(Double z) {
+			this.location.setZ(z);
 		}
 		
 		/**
@@ -103,7 +102,7 @@ public class SignTimer {
 		 * @return String
 		 */
 		public String getWorld() {
-			return world;
+			return this.location.getWorld().getName();
 		}
 		
 		/**
@@ -111,59 +110,57 @@ public class SignTimer {
 		 * @param world - String
 		 */
 		public void setWorld(String world) {
-			this.world = world;
+			this.location.setWorld(Bukkit.getServer().getWorld(world));
 		}
 
 		/**
-		 * Generate and return the ID of the sign. ID in the format X_Y_Z_World.
+		 * Generate and return the serialized value of the sign in the format: name_X_Y_Z_World_line_preset_command.
 		 * @return String
 		 */
-		public String getId() {
-			return x.toString() + "_" + y.toString() + "_" + z.toString() + "_" + world;
+		public String toString() {
+			return this.name + "|" +
+				   Double.toString(this.location.getX()) + "|" + 
+				   Double.toString(this.location.getY()) + "|" + 
+				   Double.toString(this.location.getZ()) + "|" + 
+				   this.location.getWorld().getName() + "|" +
+				   Integer.toString(this.line) + "|" +
+				   this.preset + "|" +
+				   this.command.replace(' ', '_');
 		}
 		
 		/**
-		 * Parse and set X, Y, Z and World of the sign from a sign ID having format X_Y_Z_World.
+		 * Parse and set name, X, Y, Z, World, line, preset and command in the format: name_X_Y_Z_World_line_preset_command.
 		 * @param id - String
 		 */
-		public void setId(String id) {
-			String[] _id = id.split("_");
-			this.x = Integer.parseInt(_id[0]);
-			this.y = Integer.parseInt(_id[1]);
-			this.x = Integer.parseInt(_id[2]);
-			this.world = _id[3];
+		public void parse(String s) {
+			String[] _id = s.split("|");
+			this.name = _id[0];
+			this.location.setX(Double.parseDouble(_id[1]));
+			this.location.setY(Double.parseDouble(_id[2]));
+			this.location.setZ(Double.parseDouble(_id[3]));
+			this.location.setWorld(Bukkit.getServer().getWorld(_id[4]));
+			this.line = Integer.parseInt(_id[5]);
+			this.preset = _id[6];
+			this.command = _id[7].replace('_', ' ');
 		}
 
 		/**
 		 * Return to string value of sign's timer using the format specified using setFormat().
 		 * @return String
 		 */
-		public String getTimer() {
-			return timer;
+		public String getPreset() {
+			return preset;
 		}
 
 		/**
 		 * Parse and set the timer from string using the format specified using setFormat(). 
 		 * @param timer - String
 		 */
-		public void setTimer(String timer) {
-			this.timer = timer;
-		}
-
-		/**
-		 * Get hours.
-		 * @return Integer
-		 */
-		public Integer getHours() {
-			return hours;
-		}
-
-		/**
-		 * Set hours.
-		 * @param hours - Integer
-		 */
-		public void setHours(Integer hours) {
-			this.hours = hours;
+		public void setPreset(String preset) {
+			this.preset = preset;
+			String[] time = preset.split(":");
+			this.minutes = Integer.parseInt(time[0]);
+			this.seconds = Integer.parseInt(time[1]);
 		}
 
 		/**
@@ -203,8 +200,16 @@ public class SignTimer {
 		 * @return String
 		 */
 		public String increment() {
+			seconds++;
 			
-			return "";			
+        	if (seconds > 59) {
+        		seconds = 0;
+        		minutes++;
+        	}
+        	if (minutes > 59) {
+        		minutes = 0;
+        	}
+        	return getTime();
 		}
 
 		/**
@@ -212,23 +217,51 @@ public class SignTimer {
 		 * @return String
 		 */
 		public String decrement() {
-			
-			return "";			
+        	if (minutes + seconds == 0)
+        		minutes = 5;
+        	else
+        		if (seconds == 0) {
+        			seconds = 59;
+        			minutes--;
+        		}
+        		else
+        			seconds--;
+        	return getTime();
+		}
+		
+		public String getTime() {
+			return String.format("[%02d:%02d]", minutes, seconds);
 		}
 
-		/**
-		 * Get time format. HH:MM:SS
-		 * @return String
-		 */
-		public String getFormat() {
-			return format;
+		public String getName() {
+			return name;
 		}
 
-		/**
-		 * Set time format. HH:MM:SS
-		 * @param format - String
-		 */
-		public void setFormat(String format) {
-			this.format = format;
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Integer getLine() {
+			return line;
+		}
+
+		public void setLine(Integer line) {
+			this.line = line;
+		}
+
+		public String getCommand() {
+			return command;
+		}
+
+		public void setCommand(String command) {
+			this.command = command;
+		}
+
+		public boolean isAuto() {
+			return auto;
+		}
+
+		public void setAuto(boolean auto) {
+			this.auto = auto;
 		}
 }

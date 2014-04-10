@@ -2,7 +2,7 @@ name: SignOfTheTimes
 author: Chrisbotcom
 website: http://chrisbotcom.github.io/SignOfTheTimes/
 main: io.github.chrisbotcom.signofthetimes.SignOfTheTimes
-version: 0.0.1
+version: 0.0.2
 commands:
    sott:
       description: SignOfTheTimes plugin.
