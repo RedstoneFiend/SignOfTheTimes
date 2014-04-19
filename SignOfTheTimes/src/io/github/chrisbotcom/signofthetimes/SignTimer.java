@@ -98,22 +98,6 @@ public class SignTimer {
 		}
 		
 		/**
-		 * Get the world of the sign.
-		 * @return String
-		 */
-		public String getWorld() {
-			return this.location.getWorld().getName();
-		}
-		
-		/**
-		 * Set the world of the sign.
-		 * @param world - String
-		 */
-		public void setWorld(String world) {
-			this.location.setWorld(Bukkit.getServer().getWorld(world));
-		}
-
-		/**
 		 * Generate and return the serialized value of the sign in the format: name_X_Y_Z_World_line_preset_command.
 		 * @return String
 		 */
@@ -159,8 +143,8 @@ public class SignTimer {
 		public void setPreset(String preset) {
 			this.preset = preset;
 			String[] time = preset.split(":");
-			this.minutes = Integer.parseInt(time[0]);
-			this.seconds = Integer.parseInt(time[1]);
+			this.minutes = Integer.parseInt(time[0].substring(1));
+			this.seconds = Integer.parseInt(time[1].substring(0, 1));
 		}
 
 		/**

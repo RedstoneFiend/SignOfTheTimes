@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -88,12 +87,13 @@ public class SignOfTheTimes  extends JavaPlugin implements Listener {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	
             public void run() {
-            	            	
-            	for (SignTimer signTimer: signs) {
-            		signTimer.decrement();
-            		Sign sign = (Sign) getServer().getWorld(signTimer.getWorld()).getBlockAt(signTimer.getLocation()).getState();
-            		sign.setLine(signTimer.getLine(), signTimer.getTime());
-            		sign.update();
+            	if (signs != null && !signs.isEmpty()) {           	
+	            	for (SignTimer signTimer: signs) {
+	            		signTimer.decrement();
+	            		Sign sign = (Sign) getServer().getWorld(signTimer.getLocation().getWorld().getName()).getBlockAt(signTimer.getLocation()).getState();
+	            		sign.setLine(signTimer.getLine(), signTimer.getTime());
+	            		sign.update();
+	            	}
             	}
             }
         }, 20L, 20L);
@@ -102,34 +102,43 @@ public class SignOfTheTimes  extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
     	
+		// debug
+		sendMessage((CommandSender) event.getPlayer(), "onPlayerInteract");
+    	
     	// If interaction pending and action is right-click.
-    	if (interactions.containsKey(event.getPlayer()) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-        
+    	if (interactions.containsKey(event.getPlayer().getName()) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+    		
+    		// debug
+    		sendMessage((CommandSender) event.getPlayer(), "interactions.containsKey(event.getPlayer()) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)");
+    		
     		Material block = event.getClickedBlock().getType();
    	    	
 	        if (block == Material.SIGN_POST || block == Material.WALL_SIGN) {
 	
-	         	event.setCancelled(true);
+	    		// debug
+	    		sendMessage((CommandSender) event.getPlayer(), "block == Material.SIGN_POST || block == Material.WALL_SIGN");
+
+	    		event.setCancelled(true);
 	        	
 	        	Sign newSign = (Sign) event.getClickedBlock().getState();
 	         	Location location = newSign.getLocation();
-	         	World world = newSign.getWorld();
-	         	Interaction interaction = interactions.get(event.getPlayer());
+	         	Interaction interaction = interactions.get(event.getPlayer().getName());
 	         	
 	        	switch (interaction.command.toLowerCase()) {
 	        	
 		    	 	case "new":		// /sott new <name>
 			        	// verify sign is not already named
-			        	for (SignTimer sign: signs) {
-			        		if (sign.getLocation().equals(location)) {
-			        			sendMessage((CommandSender) event.getPlayer(), "Sign alreay exists as name: " + sign.getName());
-			        			return;
-			        		}
-			        	}
-			        	
+		    	 		if (signs != null && !signs.isEmpty()) {
+		    	 			for (SignTimer sign: signs) {
+				        		if (sign.getLocation().equals(location)) {
+				        			sendMessage((CommandSender) event.getPlayer(), "Sign already exists as name: " + sign.getName());
+				        			return;
+				        		}
+				        	}
+		    	 		}
+		    	 		
 			        	SignTimer signTimer = new SignTimer(interaction.name);
 			        	signTimer.setLocation(location);
-			        	signTimer.setWorld(world.getName());
 			        	
 			        	// find line with time on it.
 			        	String[] lines = newSign.getLines();
